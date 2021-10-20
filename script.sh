@@ -331,6 +331,8 @@ EOF
         # file in production servers. For more see comments in the file itself.
         ln -s /etc/nginx/sites-available/dashi /etc/nginx/sites-enabled/
         rm /etc/nginx/sites-enabled/default
+        service php8.0-fpm stop
+        service php8.0-fpm start
     fi
 
     # Restart nginx
@@ -594,4 +596,4 @@ format_time ()
 main "$@"
 exit $?
 
-# Check if new 1
+# Check if new 2
