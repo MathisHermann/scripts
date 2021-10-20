@@ -21,6 +21,7 @@ user=$USER
 main () 
 {
     get_options "$@"
+    check_root
 
     if [[ "${installation_type}" == "nginx" ]]; then
         install_nginx
@@ -98,26 +99,28 @@ install_app ()
     cd ~
     git clone https://github.com/MathisHermann/dashi_3cx.git
     cd dashi_3cx/
-    echo "${FONT_BOLD}Copying .env. Enter the credentials in here before the next step.${FONT_RESET}"
+    echo -e "${FONT_BOLD}Copying .env. Enter the credentials in here before the next step.${FONT_RESET}"
     cp .env.example .env
-    mv ~/dashi_3cx /var/www/dashi
-    cd /var/www/dashi
-    # Install Composer dependencies
-    echo "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
-    echo "composer install"
-    echo "php artisan key:generate"
-}
-
-nginx_config ()
-{
-
+    
     # Set Permissions so that the main OS account expected to be used by a developer
     # exists and is granted access to create and update files on the site.
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
     adduser "${user}" www-data
     chown -R www-data.www-data /var/www/dashi/storage
     chown -R www-data.www-data /var/www/dashi/bootstrap/cache
-    
+
+    # Install Composer dependencies
+    echo -e "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
+
+    echo "composer install"
+    echo "php artisan key:generate"
+}
+
+nginx_config ()
+{  
+    cd ~
+    mv ~/dashi_3cx /var/www/dashi
+    cd /var/www/dashi
 
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
