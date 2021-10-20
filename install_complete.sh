@@ -113,7 +113,7 @@ install_app ()
 
 nginx_config ()
 {  
-    mv /dashi_3cx /var/www/dashi
+    mv dashi_3cx /var/www/dashi
     cd /var/www/dashi
 
     # Set Permissions so that the main OS account expected to be used by a developer
@@ -305,3 +305,11 @@ set_installation ()
 
 main "$@"
 exit $?
+# this is some change
+#
+#
+#
+#
+#
+#
+#
