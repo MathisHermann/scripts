@@ -404,7 +404,7 @@ check_apt ()
     apt_install "ufw"
     sudo curl -s https://getcomposer.org/installer | php
     sudo mv composer.phar /usr/local/bin/composer
-    sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
+    sudo git clone https://github.com/MathisHermann/dashi_3cx.git /var/www/html/dashi
 
     if hash apt 2>/dev/null; then
         # Update [apt] Package Manager
