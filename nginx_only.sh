@@ -49,8 +49,8 @@ main ()
 
     apt_install "git"
     apt_install "unzip"
-    sudo curl -s https://getcomposer.org/installer | php
-    sudo mv composer.phar /usr/local/bin/composer
+    curl -s https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
 
     if hash apt 2>/dev/null; then
         # Update [apt] Package Manager

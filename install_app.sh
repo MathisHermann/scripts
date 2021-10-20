@@ -22,11 +22,74 @@ main ()
 {
     get_options "$@"
 
-    if [[ "${server_type}" == "App" ]]; then
+    if [[ "${installation_type}" == "nginx" ]]; then
+        install_nginx
+    else if [[ "${installation_type}" == "app" ]]; then
         install_app
-    else
+    else if [[ "${installation_type}" == "config" ]]; then
         nginx_config
     fi
+}
+
+install_nginx ()
+{
+    # 3rd party repositories are needed for specific versions of PHP
+    if [[ "${PHP_VER}" != "" ]]; then
+        if hash "php" 2>/dev/null; then    
+            PHP_VER_INSTALLED=sh php -v
+            if [[ ${PHP_VER_INSTALLED} == "8.0"* ]]; then
+                echo -e "PHP 8.0 already installed"
+            fi
+        else
+            echo -e "Updating apt"
+            sudo apt update
+            apt_install "wget"
+            apt_install "lsb-release"
+            apt_install "ca-certificates"
+            apt_install "apt-transport-https"
+            apt_install "software-properties-common"
+            echo -e "Installing dependencies"  
+            echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
+            wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
+            sudo apt update
+            apt_install "php8.0"
+            apt_install "php8.0-mbstring"
+            apt_install "php8.0-xml"
+            apt_install "php8.0-bcmath"
+            apt_install "php8.0-fpm"
+            apt_install "php8.0-zip"
+        fi
+    fi
+
+    apt_install "git"
+    apt_install "unzip"
+    curl -s https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
+
+    if hash apt 2>/dev/null; then
+        # Update [apt] Package Manager
+        echo -e "Updating APT using ${FONT_BOLD}${FONT_UNDERLINE}apt update${FONT_RESET}"
+        apt update
+        # The [upgrade] is not required but often recommend.
+        # However, it takes many minutes so it is commented out by default.
+        # apt upgrade
+    else
+        >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, This script requires Advanced Package Tool (APT) and currently only runs on"
+        >&2 echo "Ubuntu, Debian, and related Linux distributions"
+        exit $ERR_MISSING_APT
+    fi
+
+
+    # Safety check to make sure that Apache is not already installed
+    if hash apache2 2>/dev/null; then
+        apt_remove "apache2"
+    fi
+
+    # Install nginx and PHP
+    apt_install 'nginx'
+
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Reboot now the machine and then run the second script.${FONT_RESET}"
+}
 }
 
 install_app ()
@@ -166,23 +229,27 @@ get_options ()
     if [[ -z "$1" ]]; then
         while true; do
             echo "Which server would you like to install:"
+            echo "  nginx (n)"
             echo "  app (a)"
-            echo "  nginx config (n)"
-            echo "  Cancel Script (c)"
-            echo "Enter a, n, or c:"
+            echo "  config (c)"
+            echo "  exit (x)"
+            echo "Enter n, a, c, or x:"
             read -r input
             case "$input" in
                 c)
-                    echo 'Script Cancelled'
-                    exit $ERR_GENERAL
+                    installation=config
                     ;;
                 a)
-                    installation=App
+                    installation=app
                     break
                     ;;
                 n)
                     installation=nginx
                     break
+                    ;;
+                x)
+                    echo 'Script Cancelled'
+                    exit $ERR_GENERAL
                     ;;
                 *) continue ;;
             esac
@@ -194,8 +261,9 @@ get_options ()
     local OPTIND opt
     while getopts ":anh" opt; do
         case "${opt}" in
-            a) set_installation "App" ;;
-            n) set_installation "nginx config" ;;
+            a) set_installation "app" ;;
+            n) set_installation "nginx" ;;
+            c) set_installation "config";;
             h)
                 show_help
                 exit 0
@@ -225,7 +293,7 @@ check_root ()
 
 set_installation ()
 {
-    server_type="$1"
+    installation_type="$1"
 }
 
 main "$@"

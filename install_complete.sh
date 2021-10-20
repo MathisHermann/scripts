@@ -24,9 +24,9 @@ main ()
 
     if [[ "${installation_type}" == "nginx" ]]; then
         install_nginx
-    else if [[ "${installation_type}" == "app" ]]; then
+    elif [[ "${installation_type}" == "app" ]]; then
         install_app
-    else if [[ "${installation_type}" == "config" ]]; then
+    elif [[ "${installation_type}" == "config" ]]; then
         nginx_config
     fi
 }
@@ -90,35 +90,34 @@ install_nginx ()
 
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Reboot now the machine and then run the second script.${FONT_RESET}"
 }
-}
 
 install_app ()
 {
     # Get Data
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
+    cd ~
     git clone https://github.com/MathisHermann/dashi_3cx.git
-
-
-    # Set Permissions so that the main OS account expected to be used by a developer
-    # exists and is granted access to create and update files on the site.
-    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
-    adduser "${user}" www-data
-    chown -R "${user}.www-data" /var/www/html/
-    chown -R "www-data.www-data" /var/www/html/
-    chmod 0775 -R /var/www/html/dashi
-    
+    cd dashi_3cx/
+    echo "${FONT_BOLD}Copying .env. Enter the credentials in here before the next step.${FONT_RESET}"
+    cp .env.example .env
+    mv ~/dashi_3cx /var/www/dashi
+    cd /var/www/html/dashi
     # Install Composer dependencies
     echo "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
-    echo "cd /var/www/html/dashi"
     echo "composer install"
-    echo "cp .env.example .env"
     echo "php artisan key:generate"
-
 }
 
 nginx_config ()
 {
 
+    # Set Permissions so that the main OS account expected to be used by a developer
+    # exists and is granted access to create and update files on the site.
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
+    adduser "${user}" www-data
+    chown -R www-data.www-data /var/www/dashi/storage
+    chown -R www-data.www-data /var/www/dashi/bootstrap/cache
+    
 
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
@@ -144,7 +143,7 @@ cat > /etc/nginx/sites-available/dashi <<EOF
 server {
 ${tab}listen 80;
 ${tab}server_name _;
-${tab}root /var/www/html/dashi/public;
+${tab}root /var/www/dashi/public;
 
 ${tab}add_header X-Frame-Options "SAMEORIGIN";
 ${tab}add_header X-Content-Type-Options "nosniff";
