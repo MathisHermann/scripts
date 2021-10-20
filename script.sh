@@ -382,7 +382,7 @@ check_apt ()
             apt_install "wget"
             apt_install "lsb-release"
             apt_install "ca-certificates"
-            apt_install "wgapt-transport-httpset"
+            apt_install "apt-transport-httpset"
             apt_install "software-properties-common"
             echo -e "Installing dependencies"  
             echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
