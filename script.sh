@@ -118,12 +118,6 @@ main ()
         install_nginx
     fi
 
-    # Install the FastSitePHP Starter Site
-
-    # Navigate to your home directory and download the Starter Site
-    # This is a small download (~67 kb)
-    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
-    sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
 
     # If this script runs more than once the files will already be deleted
     if [[ -f /var/www/html/index.html ]]; then
@@ -138,9 +132,14 @@ main ()
     # exists and is granted access to create and update files on the site.
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
     adduser "${user}" www-data
-    chown "${user}:www-data" -R /var/www/html/dashi/storage
-    chown "www-data.www-data" -R /var/www/html/dashi/bootstrap/cache
-    chmod 0775 -R /var/www
+    chown -R "${user}.www-data" /var/www/html
+    chown -R "www-data.www-data" /var/www/html
+
+    # Get Data
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
+    git clone https://github.com/MathisHermann/dashi_3cx.git /var/www/html/dashi
+
+    chmod 0775 -R /var/www/html/dashi
 
     # Install Composer dependencies
     composer install
@@ -253,10 +252,11 @@ install_nginx ()
     local php_ver file tab
 
     # Safety check to make sure that Apache is not already installed
-    #if hash apache2 2>/dev/null; then
-     #   >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, unable to install nginx because Apache is already setup on this server."
-     #   exit $ERR_GENERAL
-    #fi
+    if hash apache2 2>/dev/null; then
+        apt remoce --purge apache2
+        # >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, unable to install nginx because Apache is already setup on this server."
+        # exit $ERR_GENERAL
+    fi
 
     # Install nginx and PHP
     apt_install 'nginx'
@@ -383,7 +383,6 @@ check_apt ()
             apt_install "php8.0-fpm"
             apt_install "php8.0-zip"
             apt_install "php8.0-common"
-            apt_install "php8.0-fpm"
             apt_install "php8.0-cli"
         fi
     fi
