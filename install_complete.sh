@@ -111,7 +111,7 @@ install_app ()
 
     # Install Composer dependencies
     echo -e "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
-
+    echo "cd dashi_3cx"
     echo "composer install"
     echo "php artisan key:generate"
 }
