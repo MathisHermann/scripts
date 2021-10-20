@@ -113,8 +113,7 @@ install_app ()
 
 nginx_config ()
 {  
-    cd ~
-    mv ~/dashi_3cx /var/www/dashi
+    mv /dashi_3cx /var/www/dashi
     cd /var/www/dashi
 
     # Set Permissions so that the main OS account expected to be used by a developer
@@ -142,8 +141,9 @@ nginx_config ()
         tab="$(printf '\t')"
 
 # bash heredoc "multi-line string"
-realpath_root='$realpath_root'
-fastcgi_script_name='$fastcgi_script_name'
+SCRIPT_FILENAME='$realpath_root$fastcgi_script_name'
+fastcgi_script_name=''
+uri='$uri $uri/ /index.php?$query_string'
 cat > /etc/nginx/sites-available/dashi <<EOF
 server {
 ${tab}listen 80;
@@ -151,14 +151,15 @@ ${tab}server_name _;
 ${tab}root /var/www/dashi/public;
 
 ${tab}add_header X-Frame-Options "SAMEORIGIN";
+${tab}add_header X-XSS-Protection "1; mode=block";
 ${tab}add_header X-Content-Type-Options "nosniff";
 
-${tab}index index.php;
+${tab}index index.php index.html index.htm;
 
 ${tab}charset utf-8;
 
 ${tab}location / {
-${tab}${tab}try_files $uri $uri/ /index.php?$query_string;
+${tab}${tab}try_files ${uri};
 ${tab}}
 
 ${tab}location = /favicon.ico { access_log off; log_not_found off; }
@@ -168,7 +169,8 @@ ${tab}error_page 404 /index.php;
 
 ${tab}location ~ \.php$ {
 ${tab}${tab}fastcgi_pass unix:/var/run/php/php${php_ver}-fpm.sock;
-${tab}${tab}fastcgi_param SCRIPT_FILENAME ${realpath_root}${fastcgi_script_name};
+${tab}${tab}fastcgi_index index.php;
+${tab}${tab}fastcgi_param SCRIPT_FILENAME ${SCRIPT_FILENAME};
 ${tab}${tab}include fastcgi_params;
 ${tab}}
 
