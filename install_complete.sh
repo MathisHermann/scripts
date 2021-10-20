@@ -242,6 +242,7 @@ get_options ()
             case "$input" in
                 c)
                     installation=config
+                    break
                     ;;
                 a)
                     installation=app
