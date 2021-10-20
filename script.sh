@@ -379,25 +379,25 @@ check_apt ()
         else
             echo -e "Updating apt"
             sudo apt update
-            sudo apt_install "wget"
-            sudo apt_install "lsb-release"
-            sudo apt_install "ca-certificates"
-            sudo apt_install "wgapt-transport-httpset"
-            sudo apt_install "software-properties-common"
+            apt_install "wget"
+            apt_install "lsb-release"
+            apt_install "ca-certificates"
+            apt_install "wgapt-transport-httpset"
+            apt_install "software-properties-common"
             echo -e "Installing dependencies"  
             echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
             wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
             sudo apt update
-            sudo apt_install "php8.0"
-            sudo apt_install "php8.0-mbstring"
-            sudo apt_install "php8.0-xml"
-            sudo apt_install "php8.0-fpm"
-            sudo apt_install "php8.0-zip"
-            sudo apt_install "php8.0-common"
-            sudo apt_install "php8.0-fpm"
-            sudo apt_install "php8.0-cli"
-            sudo apt_install "git" 
-            sudo apt_install "unzip"
+            apt_install "php8.0"
+            apt_install "php8.0-mbstring"
+            apt_install "php8.0-xml"
+            apt_install "php8.0-fpm"
+            apt_install "php8.0-zip"
+            apt_install "php8.0-common"
+            apt_install "php8.0-fpm"
+            apt_install "php8.0-cli"
+            apt_install "git" 
+            apt_install "unzip"
             sudo curl -s https://getcomposer.org/installer | php
             sudo mv composer.phar /usr/local/bin/composer
             COMPOSER_STATUS=sh composer diagnose
