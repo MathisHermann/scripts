@@ -394,7 +394,7 @@ check_apt ()
         apt update
         # The [upgrade] is not required but often recommend.
         # However, it takes many minutes so it is commented out by default.
-        # apt upgrade
+        apt upgrade
     else
         >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, This script requires Advanced Package Tool (APT) and currently only runs on"
         >&2 echo "Ubuntu, Debian, and related Linux distributions"
