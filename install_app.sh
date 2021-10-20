@@ -21,6 +21,25 @@ user=$USER
 main () 
 { 
 
+      # Get Data
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
+    git clone https://github.com/MathisHermann/dashi_3cx.git /var/www/html/dashi
+
+
+    # Set Permissions so that the main OS account expected to be used by a developer
+    # exists and is granted access to create and update files on the site.
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
+    adduser "${user}" www-data
+    chown -R "${user}.www-data" /var/www/html/
+    chown -R "www-data.www-data" /var/www/html/
+    chmod 0775 -R /var/www/html/dashi
+    
+    # Install Composer dependencies
+    cd /var/www/html/dashi
+    composer install
+    cp .env.example .env
+    php artisan key:generate
+
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
 
@@ -55,7 +74,7 @@ ${tab}index index.php;
 ${tab}charset utf-8;
 
 ${tab}location / {
-${tab}try_files $uri $uri/ /index.php?$query_string;
+${tab}${tab}try_files $uri $uri/ /index.php?$query_string;
 ${tab}}
 
 ${tab}location = /favicon.ico { access_log off; log_not_found off; }
@@ -64,13 +83,13 @@ ${tab}location = /robots.txt  { access_log off; log_not_found off; }
 ${tab}error_page 404 /index.php;
 
 ${tab}location ~ \.php$ {
-${tab}fastcgi_pass unix:/var/run/php/php${php_ver}-fpm.sock;
-${tab}fastcgi_param SCRIPT_FILENAME ${realpath_root}${fastcgi_script_name};
-${tab}include fastcgi_params;
+${tab}${tab}fastcgi_pass unix:/var/run/php/php${php_ver}-fpm.sock;
+${tab}${tab}fastcgi_param SCRIPT_FILENAME ${realpath_root}${fastcgi_script_name};
+${tab}${tab}include fastcgi_params;
 ${tab}}
 
 ${tab}location ~ /\.(?!well-known).* {
-${tab}deny all;
+${tab}${tab}deny all;
 ${tab}}
 }
 EOF
@@ -98,25 +117,6 @@ EOF
     if [[ -f /var/www/html/index.nginx-debian.html ]]; then
         rm /var/www/html/index.nginx-debian.html
     fi
-
-
-    # Set Permissions so that the main OS account expected to be used by a developer
-    # exists and is granted access to create and update files on the site.
-    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
-    adduser "${user}" www-data
-    chown -R "${user}.www-data" /var/www/html
-    chown -R "www-data.www-data" /var/www/html
-
-    # Get Data
-    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
-    git clone https://github.com/MathisHermann/dashi_3cx.git /var/www/html/dashi
-
-    chmod 0775 -R /var/www/html/dashi
-
-    # Install Composer dependencies
-    composer install
-    cp .env.example .env
-    php artisan key:generate
 
 }
 
