@@ -371,9 +371,11 @@ check_apt ()
 {
     # 3rd party repositories are needed for specific versions of PHP
     if [[ "${PHP_VER}" != "" ]]; then
-        PHP_VER_INSTALLED=sh php -v
-        if [[ ${PHP_VER_INSTALLED} == "8.0"* ]]; then
-            echo -e "PHP 8.0 already installed"
+        if hash "php" 2>/dev/null; then    
+            PHP_VER_INSTALLED=sh php -v
+            if [[ ${PHP_VER_INSTALLED} == "8.0"* ]]; then
+                echo -e "PHP 8.0 already installed"
+            fi
         else
             sudo apt update
             sudo apt install -y lsb-release ca-certificates apt-transport-https software-properties-common
@@ -389,7 +391,7 @@ check_apt ()
             echo -e "Verify the composer status [Y/n]:"
             read verification
             if [[ ${verification} == "n" ]]; then
-               exit
+                exit
             fi
             sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
         fi
