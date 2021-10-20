@@ -108,7 +108,7 @@ main ()
     # Environment Validation
     # These function will terminate the script if there is an error
     check_root
-    user=$(get_user)
+    user=$USER
     check_apt
 
     # Install Web Server (Apache or nginx) and PHP
@@ -283,15 +283,6 @@ install_nginx ()
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
 
-    # Add PHP Extensions. A large number of extensions exist and the
-    # installed PHP version number needs to be included. The extensions
-    # below are needed for all FastSitePHP common features to work and
-    # for all Unit Tests to succeed, however they are not required
-    # in order to use FastSitePHP.
-    apt_install "php${php_ver}-sqlite3"
-    apt_install "php${php_ver}-gd"
-    apt_install "php${php_ver}-bcmath"
-    apt_install "php${php_ver}-simplexml"
 
     # The zip extension is required in order for the FastSitePHP
     # install script to run.
@@ -380,11 +371,27 @@ check_apt ()
 {
     # 3rd party repositories are needed for specific versions of PHP
     if [[ "${PHP_VER}" != "" ]]; then
-        if [ ! -f "/etc/apt/sources.list.d/ondrej-ubuntu-php-bionic.list" ]; then
-            echo -e "Install APT Repository ${FONT_BOLD}${FONT_UNDERLINE}ppa:ondrej/php${FONT_RESET}"
-            add-apt-repository ppa:ondrej/php -y
+        PHP_VER_INSTALLED=sh php -v
+        if [[ ${PHP_VER_INSTALLED} == "8.0"* ]]; then
+            echo -e "PHP 8.0 already installed"
         else
-            echo -e "APT Repository ${FONT_BOLD}${FONT_UNDERLINE}ppa:ondrej/php${FONT_RESET} already exists"
+            sudo apt update
+            sudo apt install -y lsb-release ca-certificates apt-transport-https software-properties-common
+            echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
+            wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
+            sudo apt update
+            sudo apt install php8.0
+            sudo apt install php8.0-mbstring php8.0-xml php8.0-fpm php8.0-zip php8.0-common php8.0-fpm php8.0-cli
+            sudo apt install git nginx unzip
+            sudo curl -s https://getcomposer.org/installer | php
+            sudo mv composer.phar /usr/local/bin/composer
+            COMPOSER_STATUS=sh composer diagnose
+            echo -e "Verify the composer status [Y/n]:"
+            read verification
+            if [[ ${verification} == "n" ]]
+               exit
+            fi
+            sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
         fi
     fi
 
@@ -394,7 +401,7 @@ check_apt ()
         apt update
         # The [upgrade] is not required but often recommend.
         # However, it takes many minutes so it is commented out by default.
-        apt upgrade
+        # apt upgrade
     else
         >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, This script requires Advanced Package Tool (APT) and currently only runs on"
         >&2 echo "Ubuntu, Debian, and related Linux distributions"
