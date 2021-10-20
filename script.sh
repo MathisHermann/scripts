@@ -449,7 +449,7 @@ get_options ()
 
     # Get options
     local OPTIND opt
-    while getopts ":anh" opt; do
+    while getopts ":canh" opt; do
         case "${opt}" in
             a) set_server_type "Apache" ;;
             n) set_server_type "nginx" ;;
