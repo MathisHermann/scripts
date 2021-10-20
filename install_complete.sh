@@ -97,7 +97,6 @@ install_app ()
 {
     # Get Data
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
-    cd ~
     git clone https://github.com/MathisHermann/dashi_3cx.git
     cd dashi_3cx/
     echo -e "${FONT_BOLD}Copying .env. Enter the credentials in here before the next step.${FONT_RESET}"
@@ -122,7 +121,7 @@ nginx_config ()
     adduser "${user}" www-data
     chown -R www-data.www-data /var/www/dashi/storage
     chown -R www-data.www-data /var/www/dashi/bootstrap/cache
-    
+
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
 
