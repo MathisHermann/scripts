@@ -21,7 +21,16 @@ user=$USER
 main () 
 { 
 
-      # Get Data
+    if [[ "${server_type}" == "App" ]]; then
+        install_app
+    else
+        nginx_config
+    fi
+}
+
+install_app ()
+{
+    # Get Data
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
     git clone https://github.com/MathisHermann/dashi_3cx.git /var/www/html/dashi
 
@@ -35,10 +44,17 @@ main ()
     chmod 0775 -R /var/www/html/dashi
     
     # Install Composer dependencies
-    cd /var/www/html/dashi
-    composer install
-    cp .env.example .env
-    php artisan key:generate
+    echo "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
+    echo "cd /var/www/html/dashi"
+    echo "composer install"
+    echo "cp .env.example .env"
+    echo "php artisan key:generate"
+
+}
+
+nginx_config ()
+{
+
 
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
@@ -59,7 +75,7 @@ main ()
 
 # bash heredoc "multi-line string"
 realpath_root='$realpath_root'
-realpath_root='$fastcgi_script_name'
+fastcgi_script_name='$fastcgi_script_name'
 cat > /etc/nginx/sites-available/dashi <<EOF
 server {
 ${tab}listen 80;
@@ -118,6 +134,7 @@ EOF
         rm /var/www/html/index.nginx-debian.html
     fi
 
+    echo "The app should be available now."
 }
 
 apt_install ()
@@ -140,6 +157,64 @@ apt_remove ()
     else
         echo -e "${FONT_BOLD}${FONT_UNDERLINE}${1}${FONT_RESET} is not installed"
     fi
+}
+
+get_options ()
+{
+    # If no parameters, prompt user for server type
+    if [[ -z "$1" ]]; then
+        while true; do
+            echo "Which server would you like to install:"
+            echo "  app (a)"
+            echo "  nginx config (n)"
+            echo "  Cancel Script (c)"
+            echo "Enter a, n, or c:"
+            read -r input
+            case "$input" in
+                c)
+                    echo 'Script Cancelled'
+                    exit $ERR_GENERAL
+                    ;;
+                a)
+                    installation=App
+                    break
+                    ;;
+                n)
+                    installation=nginx
+                    break
+                    ;;
+                *) continue ;;
+            esac
+        done
+        return 0
+    fi
+
+    # Get options
+    local OPTIND opt
+    while getopts ":anh" opt; do
+        case "${opt}" in
+            a) set_installation "App" ;;
+            n) set_installation "nginx config" ;;
+            h)
+                show_help
+                exit 0
+                ;;
+            *)
+                >&2 echo ""
+                >&2 echo -e "${FONT_ERROR}Error, option is invalid: [-$OPTARG]${FONT_RESET}"
+                >&2 echo -e "${FONT_ERROR}To see help with valid options run:${FONT_RESET}"
+                >&2 echo -e "${FONT_ERROR}bash ${SCRIPT_NAME} -h${FONT_RESET}"
+                >&2 echo ""
+                exit $ERR_INVALID_OPT
+                ;;
+        esac
+    done
+    shift $((OPTIND-1))
+}
+
+set_installation ()
+{
+    server_type="$1"
 }
 
 main "$@"
