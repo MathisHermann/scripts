@@ -16,6 +16,7 @@ SCRIPT_PATH="${BASH_SOURCE[0]}"
 SCRIPT_NAME=$(basename "${SCRIPT_PATH}")
 
 PHP_VER="8.0"
+user=$USER
 
 main () 
 { 
