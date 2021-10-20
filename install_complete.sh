@@ -1,3 +1,58 @@
+!/usr/bin/env bash
+
+# =============================================================================
+#
+#  ------------------------------------------------------------------
+#  Bash Script to Setup a Web Server
+#  Install PHP, nginx, and Laravel Application
+#  ------------------------------------------------------------------
+#
+#  Inspired by: https://raw.githubusercontent.com/fastsitephp/fastsitephp/master/scripts/shell/bash/create-fast-site.sh
+#      Big parts of the script come from the source. Although it is changed a lot. Many thanks to Conrad Sollitt.
+#
+#  Author:   Mathis Hermann
+#  Created:  2021
+#  License:  MIT
+#
+#  Developed For Operating Systems:
+#      Debian 10
+#
+#  This script works on a default OS when nothing is installed and is
+#  expected to take between 2 minute to 5 minutes to
+#  install. This script should work with any user however it requires
+#  sudo access when running the install.
+#
+#  There are three steps involved. After the first step there is an automatic reboot of the system. 
+#
+#  Download and run this script:
+#
+#  Basic Usage:
+#      curl -s https://raw.githubusercontent.com/MathisHermann/scripts/main/install_complete.sh | sudo bash -s -- -n
+#      curl -s https://raw.githubusercontent.com/MathisHermann/scripts/main/install_complete.sh | bash -s -- -a
+#      curl -s https://raw.githubusercontent.com/MathisHermann/scripts/main/install_complete.sh | sudo bash -s -- -c
+#
+#  Or download directly from GitHub and install (if wget is available):
+#      wget https://raw.githubusercontent.com/MathisHermann/scripts/main/install_complete.sh
+#      sudo bash create-fast-site.sh -n
+#      bash create-fast-site.sh -a
+#      sudo bash create-fast-site.sh -c
+#
+#  Options:
+#      -h  Show Help
+#      -n  Install nginx
+#      -a  Install App
+#      -c  Load config
+#
+#
+#  This script is intended for a clean OS and one-time setup however it is
+#  generally safe to run multiple times because it checks for if programs
+#  such as php are already installed and prompts before overwriting an
+#  existing site.
+#
+#  This script is not yet linted using:
+#  https://www.shellcheck.net/
+#
+# =============================================================================
 set -eo pipefail
 
 # Font Formatting for Output
@@ -105,10 +160,10 @@ install_app ()
     cp .env.example .env
     
     # Install Composer dependencies
-    echo -e "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
-    echo "cd dashi_3cx"
-    echo "composer install"
-    echo "php artisan key:generate"
+    echo -e "${FONT_BOLD}Install composer Dependencies${FONT_RESET}"
+    cd dashi_3cx
+    composer install
+    php artisan key:generate
 }
 
 nginx_config ()
@@ -127,8 +182,8 @@ nginx_config ()
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
 
     # nginx Config
-    # Create an nginx site file: [/etc/nginx/sites-available/fastsitephp]
-    # which is also linked from [/etc/nginx/sites-enabled/fastsitephp]
+    # Create an nginx site file: [/etc/nginx/sites-available/app]
+    # which is also linked from [/etc/nginx/sites-enabled/app]
     if [[ -f /etc/nginx/sites-enabled/dashi ]]; then
         echo -e "${FONT_BOLD}${FONT_UNDERLINE}nginx config already exists for dashi${FONT_RESET}"
     else
@@ -142,7 +197,6 @@ nginx_config ()
 
 # bash heredoc "multi-line string"
 SCRIPT_FILENAME='$realpath_root$fastcgi_script_name'
-fastcgi_script_name=''
 uri='$uri $uri/ /index.php?$query_string'
 cat > /etc/nginx/sites-available/dashi <<EOF
 server {
@@ -181,7 +235,7 @@ ${tab}}
 EOF
 
         # For nginx sites under [sites-enabled] use a symbolic link to
-        # [sites-available]. Create a link for [fastsitephp] then remove the
+        # [sites-available]. Create a link for [app] then remove the
         # symbolic link for [default]. The actual [default] file still exists
         # under [sites-available]. nginx recommends not editing the [default]
         # file in production servers. For more see comments in the file itself.
@@ -303,13 +357,35 @@ set_installation ()
     installation_type="$1"
 }
 
+# -----------------------------------------------------------------------------
+# Help Text, called when passing the [-h] option
+# -----------------------------------------------------------------------------
+show_help ()
+{
+    echo ""
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Bash Script to Setup an nginx Web Server${FONT_RESET}"
+    echo "    Install nginx, Laravel app and load the ngingx config."
+    echo ""
+    echo "    This script works on a default OS when nothing is installed."
+    echo "    Running this script requires root/sudo."
+    echo ""
+    echo "    There are 3 steps involved:"
+    echo "        1) install nginx (${FONT_BOLD}run with sudo${FONT_RESET}) -n"
+    echo "        2) install laravel app (${FONT_BOLD}run without sudo${FONT_RESET}) -a"
+    echo "        3) load nginx config (${FONT_BOLD}run with sudo${FONT_RESET}) -c"
+    echo ""
+    echo -e "    ${FONT_UNDERLINE}https://github.com/MathisHermann/scripts${FONT_RESET}"
+    echo ""
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Usage:${FONT_RESET}"
+    sudo_script="    sudo bash ${SCRIPT_NAME}"
+    script="    bash ${SCRIPT_NAME}"
+    echo -e "${script}    ${FONT_DIM}# Use a prompt to select the Web Server${FONT_RESET}"
+    echo -e "${sudo_script} ${FONT_BOLD}-n${FONT_RESET} ${FONT_DIM}# Install nginx${FONT_RESET}"
+    echo -e "${script} ${FONT_BOLD}-a${FONT_RESET} ${FONT_DIM}# Install App${FONT_RESET}"
+    echo -e "${sudo_script} ${FONT_BOLD}-c${FONT_RESET} ${FONT_DIM}# Load nginx config${FONT_RESET}"
+    echo -e "${script} ${FONT_BOLD}-h${FONT_RESET} ${FONT_DIM}# Show help${FONT_RESET}"
+    echo ""
+}
+
 main "$@"
 exit $?
-# this is some change
-#
-#
-#
-#
-#
-#
-#
