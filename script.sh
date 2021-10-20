@@ -253,7 +253,7 @@ install_nginx ()
 
     # Safety check to make sure that Apache is not already installed
     if hash apache2 2>/dev/null; then
-        apt remoce --purge apache2
+        apt remove --purge apache2
         # >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, unable to install nginx because Apache is already setup on this server."
         # exit $ERR_GENERAL
     fi
