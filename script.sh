@@ -396,20 +396,15 @@ check_apt ()
             apt_install "php8.0-common"
             apt_install "php8.0-fpm"
             apt_install "php8.0-cli"
-            apt_install "git"
-            apt_install "unzip"
-            apt_install "ufw"
-            sudo curl -s https://getcomposer.org/installer | php
-            sudo mv composer.phar /usr/local/bin/composer
-            COMPOSER_STATUS=sh composer diagnose
-            echo -e "Verify the composer status [Y/n]:"
-            read verification
-            if [[ ${verification} == "n" ]]; then
-                exit
-            fi
-            sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
         fi
     fi
+
+    apt_install "git"
+    apt_install "unzip"
+    apt_install "ufw"
+    sudo curl -s https://getcomposer.org/installer | php
+    sudo mv composer.phar /usr/local/bin/composer
+    sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
 
     if hash apt 2>/dev/null; then
         # Update [apt] Package Manager
