@@ -21,13 +21,15 @@ user=$USER
 main () 
 {
     get_options "$@"
-    check_root
+    
 
     if [[ "${installation_type}" == "nginx" ]]; then
+        check_root
         install_nginx
     elif [[ "${installation_type}" == "app" ]]; then
         install_app
     elif [[ "${installation_type}" == "config" ]]; then
+        check_root
         nginx_config
     fi
 }
