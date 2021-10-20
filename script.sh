@@ -379,8 +379,12 @@ check_apt ()
         else
             echo -e "Updating apt"
             sudo apt update
-            echo -e "Installing dependencies"
-            sudo apt install -y lsb-release ca-certificates apt-transport-https software-properties-common wget
+            sudo apt_install "wget"
+            sudo apt_install "lsb-release"
+            sudo apt_install "ca-certificates"
+            sudo apt_install "wgapt-transport-httpset"
+            sudo apt_install "software-properties-common"
+            echo -e "Installing dependencies"  
             echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
             wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
             sudo apt update
