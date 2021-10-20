@@ -123,24 +123,8 @@ main ()
     # Navigate to your home directory and download the Starter Site
     # This is a small download (~67 kb)
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Downloading Repo${FONT_RESET}"
-    wget https://github.com/MathisHermann/dashi_3cx/archive/refs/heads/master.zip
-    apt_install 'unzip'
-    unzip master.zip
+    sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
 
-    # Copy Files
-    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Copying Files${FONT_RESET}"
-    copy_dir ./dashi_3cx /var/www/dashi
-    cp -r ./dashi_3cx/public/. /var/www/html
-
-    # Install FastSitePHP (~470 kb) and Dependencies (~20 - 40 kb)
-    # echo -e "${FONT_BOLD}${FONT_UNDERLINE}Installing FastSitePHP${FONT_RESET}"
-    # php /var/www/scripts/install.php
-
-    # Delete files that are not needed including the Apache default page
-    # The [.htaccess] file being deleted is a version for local development
-    # that is copied from the starter site (it's not needed for production).
-    rm /var/www/html/.htaccess
-    rm /var/www/html/Web.config
     # If this script runs more than once the files will already be deleted
     if [[ -f /var/www/html/index.html ]]; then
         rm /var/www/html/index.html
@@ -149,16 +133,19 @@ main ()
         rm /var/www/html/index.nginx-debian.html
     fi
 
-    # Remove the downloaded files
-    rm -r ./dashi_3cx
-    rm ./master.zip
 
     # Set Permissions so that the main OS account expected to be used by a developer
     # exists and is granted access to create and update files on the site.
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
     adduser "${user}" www-data
-    chown "${user}:www-data" -R /var/www
+    chown "${user}:www-data" -R /var/www/html/dashi/storage
+    chown "www-data.www-data" -R /var/www/html/dashi/bootstrap/cache
     chmod 0775 -R /var/www
+
+    # Install Composer dependencies
+    composer install
+    cp .env.example .env
+    php artisan key:generate
 
     # Success, print summary
     echo ""
@@ -404,7 +391,6 @@ check_apt ()
     apt_install "ufw"
     sudo curl -s https://getcomposer.org/installer | php
     sudo mv composer.phar /usr/local/bin/composer
-    sudo git clone https://github.com/MathisHermann/dashi_3cx.git /var/www/html/dashi
 
     if hash apt 2>/dev/null; then
         # Update [apt] Package Manager
