@@ -90,6 +90,7 @@ install_nginx ()
     apt_install 'nginx'
 
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Reboot now the machine and then run the second script.${FONT_RESET}"
+    reboot
 }
 
 install_app ()
@@ -102,13 +103,6 @@ install_app ()
     echo -e "${FONT_BOLD}Copying .env. Enter the credentials in here before the next step.${FONT_RESET}"
     cp .env.example .env
     
-    # Set Permissions so that the main OS account expected to be used by a developer
-    # exists and is granted access to create and update files on the site.
-    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
-    adduser "${user}" www-data
-    chown -R www-data.www-data /var/www/dashi/storage
-    chown -R www-data.www-data /var/www/dashi/bootstrap/cache
-
     # Install Composer dependencies
     echo -e "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
     echo "cd dashi_3cx"
@@ -122,6 +116,13 @@ nginx_config ()
     mv ~/dashi_3cx /var/www/dashi
     cd /var/www/dashi
 
+    # Set Permissions so that the main OS account expected to be used by a developer
+    # exists and is granted access to create and update files on the site.
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Setting user permissions for ${user}${FONT_RESET}"
+    adduser "${user}" www-data
+    chown -R www-data.www-data /var/www/dashi/storage
+    chown -R www-data.www-data /var/www/dashi/bootstrap/cache
+    
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
 
