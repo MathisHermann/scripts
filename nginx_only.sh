@@ -70,12 +70,12 @@ main ()
     # Safety check to make sure that Apache is not already installed
     if hash apache2 2>/dev/null; then
         apt_remove "apache2"
-        # >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, unable to install nginx because Apache is already setup on this server."
-        # exit $ERR_GENERAL
     fi
 
     # Install nginx and PHP
     apt_install 'nginx'
+
+    echo -e "${FONT_BOLD}${FONT_UNDERLINE}Reboot now the machine and then run the second script.${FONT_RESET}"
 }
 
 apt_install ()
