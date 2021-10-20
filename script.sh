@@ -388,9 +388,16 @@ check_apt ()
             echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/sury-php.list
             wget -qO - https://packages.sury.org/php/apt.gpg | sudo apt-key add -
             sudo apt update
-            sudo apt install php8.0
-            sudo apt install php8.0-mbstring php8.0-xml php8.0-fpm php8.0-zip php8.0-common php8.0-fpm php8.0-cli
-            sudo apt install git nginx unzip
+            sudo apt_install "php8.0"
+            sudo apt_install "php8.0-mbstring"
+            sudo apt_install "php8.0-xml"
+            sudo apt_install "php8.0-fpm"
+            sudo apt_install "php8.0-zip"
+            sudo apt_install "php8.0-common"
+            sudo apt_install "php8.0-fpm"
+            sudo apt_install "php8.0-cli"
+            sudo apt_install "git" 
+            sudo apt_install "unzip"
             sudo curl -s https://getcomposer.org/installer | php
             sudo mv composer.phar /usr/local/bin/composer
             COMPOSER_STATUS=sh composer diagnose
