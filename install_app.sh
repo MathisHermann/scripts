@@ -19,7 +19,8 @@ PHP_VER="8.0"
 user=$USER
 
 main () 
-{ 
+{
+    get_options "$@"
 
     if [[ "${server_type}" == "App" ]]; then
         install_app
