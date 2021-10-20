@@ -557,7 +557,7 @@ get_user ()
     # if id -u ubuntu >/dev/null 2>&1; then
     #     printf 'ubuntu'
 
-    if [[ "$(uname -a)" == *"Debian"* ]]; then
+    if [[ "$(uname -a)" == *"1000"* ]]; then
        printf '%s' $(logname)
     else
         >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, This script currently only runs on Ubuntu."
