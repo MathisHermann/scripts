@@ -101,7 +101,7 @@ install_app ()
     echo "${FONT_BOLD}Copying .env. Enter the credentials in here before the next step.${FONT_RESET}"
     cp .env.example .env
     mv ~/dashi_3cx /var/www/dashi
-    cd /var/www/html/dashi
+    cd /var/www/dashi
     # Install Composer dependencies
     echo "${FONT_BOLD}Run the following commands manually without sudo!${FONT_RESET}"
     echo "composer install"
