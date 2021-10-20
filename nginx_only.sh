@@ -41,10 +41,9 @@ main ()
             apt_install "php8.0"
             apt_install "php8.0-mbstring"
             apt_install "php8.0-xml"
+            apt_install "php8.0-bcmath"
             apt_install "php8.0-fpm"
             apt_install "php8.0-zip"
-            apt_install "php8.0-common"
-            apt_install "php8.0-cli"
         fi
     fi
 
