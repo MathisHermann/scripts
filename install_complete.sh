@@ -232,7 +232,7 @@ get_options ()
     # If no parameters, prompt user for server type
     if [[ -z "$1" ]]; then
         while true; do
-            echo "Which server would you like to install:"
+            echo "Which script would you like to run:"
             echo "  nginx (n)"
             echo "  app (a)"
             echo "  config (c)"
@@ -267,7 +267,7 @@ get_options ()
         case "${opt}" in
             a) set_installation "app" ;;
             n) set_installation "nginx" ;;
-            c) set_installation "config";;
+            c) set_installation "config" ;;
             h)
                 show_help
                 exit 0
