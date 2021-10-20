@@ -266,10 +266,10 @@ install_nginx ()
     local php_ver file tab
 
     # Safety check to make sure that Apache is not already installed
-    if hash apache2 2>/dev/null; then
-        >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, unable to install nginx because Apache is already setup on this server."
-        exit $ERR_GENERAL
-    fi
+    #if hash apache2 2>/dev/null; then
+     #   >&2 echo -e "${FONT_ERROR}Error${FONT_RESET}, unable to install nginx because Apache is already setup on this server."
+     #   exit $ERR_GENERAL
+    #fi
 
     # Install nginx and PHP
     apt_install 'nginx'
