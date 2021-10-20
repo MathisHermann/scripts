@@ -3,7 +3,7 @@ set -eo pipefail
 main () 
 { 
     # 3rd party repositories are needed for specific versions of PHP
-    if [[ "${PHP_VER}" != "" ]]; then
+    if [[ "8.0" != "" ]]; then
         if hash "php" 2>/dev/null; then    
             PHP_VER_INSTALLED=sh php -v
             if [[ ${PHP_VER_INSTALLED} == "8.0"* ]]; then
