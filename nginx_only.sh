@@ -1,3 +1,5 @@
+set -eo pipefail
+
 main () 
 { 
     # 3rd party repositories are needed for specific versions of PHP
@@ -71,3 +73,6 @@ apt_install ()
         echo -e "${FONT_BOLD}${FONT_UNDERLINE}${1}${FONT_RESET} has been installed"
     fi
 }
+
+main "$@"
+exit $?
