@@ -19,16 +19,9 @@ PHP_VER="8.0"
 
 main () 
 { 
-       
-    if [[ "${PHP_VER}" == "" ]]; then
-        apt_install 'php-fpm'
-    else
-        apt_install "php${PHP_VER}-fpm"
-    fi
 
     # Get the installed PHP major and minor version (example: 7.2)
     php_ver=$(php -r "echo PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION;")
-
 
     # nginx Config
     # Create an nginx site file: [/etc/nginx/sites-available/fastsitephp]
@@ -45,6 +38,8 @@ main ()
         tab="$(printf '\t')"
 
 # bash heredoc "multi-line string"
+realpath_root='$realpath_root'
+realpath_root='$fastcgi_script_name'
 cat > /etc/nginx/sites-available/dashi <<EOF
 server {
 ${tab}listen 80;
@@ -69,7 +64,7 @@ ${tab}error_page 404 /index.php;
 
 ${tab}location ~ \.php$ {
 ${tab}fastcgi_pass unix:/var/run/php/php${php_ver}-fpm.sock;
-${tab}fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+${tab}fastcgi_param SCRIPT_FILENAME ${realpath_root}${fastcgi_script_name};
 ${tab}include fastcgi_params;
 ${tab}}
 
@@ -86,9 +81,10 @@ EOF
         # file in production servers. For more see comments in the file itself.
         ln -s /etc/nginx/sites-available/dashi /etc/nginx/sites-enabled/
         rm /etc/nginx/sites-enabled/default
-        service php8.0-fpm stop
-        service php8.0-fpm start
     fi
+
+    service php8.0-fpm stop
+    service php8.0-fpm start
 
     # Restart nginx
     echo -e "${FONT_BOLD}${FONT_UNDERLINE}Restarting nginx${FONT_RESET}"
