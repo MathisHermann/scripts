@@ -388,7 +388,7 @@ check_apt ()
             COMPOSER_STATUS=sh composer diagnose
             echo -e "Verify the composer status [Y/n]:"
             read verification
-            if [[ ${verification} == "n" ]]
+            if [[ ${verification} == "n" ]]; then
                exit
             fi
             sudo git clone https://github.com/MathisHermann/dashi_3cx.git ./var/www/html/dashi
