@@ -612,4 +612,4 @@ format_time ()
 main "$@"
 exit $?
 
-# Check if new
+# Check if new lol
